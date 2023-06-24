@@ -1,0 +1,50 @@
+#!/bin/bash
+# install a usual dependency
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get --no-install-recommends install \
+vim-tiny \
+sudo \
+gcc-12 g++-12 \
+cmake make ninja-build libgtest-dev \
+clang-format-14 \
+libspdlog-dev \
+libboost-all-dev \
+libopencv-dev \
+python3-opencv \
+nlohmann-json3-dev \
+apt-utils bzr wget xz-utils unzip \
+raspi-config v4l-utils \
+gcc libtool libraspberrypi-dev \
+libx264-dev libjpeg-dev -y
+
+# install the remaining plugins
+sudo apt-get --no-install-recommends install libgstreamer1.0-dev \
+     libgstreamer-plugins-base1.0-dev \
+     libgstreamer-plugins-bad1.0-dev \
+     gstreamer1.0-plugins-ugly \
+     gstreamer1.0-tools \
+     gstreamer1.0-gl gstreamer1.0-gtk3 \
+     gstreamer1.0-qt5 \
+     gstreamer1.0-pulseaudio -y
+
+mkdir third_party
+cd third_party || exit
+# install the rtsp server version 1.14.4
+wget https://gstreamer.freedesktop.org/src/gst-rtsp-server/gst-rtsp-server-1.14.4.tar.xz
+tar -xf gst-rtsp-server-1.14.4.tar.xz
+cd gst-rtsp-server-1.14.4 || exit
+./configure
+make
+sudo make install
+sudo ldconfig
+cd .. || exit
+
+# install rpicamsrc in 1.14.4
+git clone https://github.com/thaytan/gst-rpicamsrc.git
+cd gst-rpicamsrc || exit
+./autogen.sh
+make
+sudo make install
+sudo ldconfig
+cd .. || exit
